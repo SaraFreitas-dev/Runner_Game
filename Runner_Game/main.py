@@ -84,6 +84,7 @@ def display_score():
     score_surface = test_font.render(f"Score: {current_time}", False, (64, 64, 64))
     score_rect = score_surface.get_rect(center=(400, 50))
     screen.blit(score_surface, score_rect)
+    return current_time
 
 def collision_sprite():
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False):
@@ -92,8 +93,34 @@ def collision_sprite():
     else:
         return True
 
+def draw_menu(score):
+    screen.fill((94, 129, 162))
+
+    # Draw Score above the logo
+    if score > 0:
+        score_surface = test_font.render(f"Score: {score}", False, (111, 196, 169))
+        score_rect = score_surface.get_rect(center=(400, 75))
+        screen.blit(score_surface, score_rect)
+
+    # Draw Logo
+    screen.blit(player_logo, player_logo_rect)
+
+    # Draw Game Over Title
+    screen.blit(gameOver_surface, gameOver_rect)
+
+    # Draw Play Again Button
+    pygame.draw.rect(screen, "#A9A9A9", playAgain_bg_rect, border_radius=10)
+    pygame.draw.rect(screen, "#000000", playAgain_bg_rect, width=3, border_radius=10)
+    screen.blit(playAgain_button, playAgain_text_rect)
+
+    # Draw Exit Button
+    pygame.draw.rect(screen, "#A9A9A9", exit_bg_rect, border_radius=10)
+    pygame.draw.rect(screen, "#000000", exit_bg_rect, width=3, border_radius=10)
+    screen.blit(exit_button, exit_text_rect)
+
 game_active = True
 start_time = 0
+score = 0
 
 player = pygame.sprite.GroupSingle()
 player.add(Player())
@@ -113,7 +140,7 @@ ground_bg = pygame.image.load("Runner_Game/graphics/ground.png")
 
 # Change Title
 gameOver_surface = test_font.render("Game Over", False, (111, 196, 169))
-gameOver_rect = gameOver_surface.get_rect(center=(400, 50))
+gameOver_rect = gameOver_surface.get_rect(center=(400, 40))
 
 # Logo Intro Screen
 player_logo = pygame.image.load("Runner_Game/graphics/Player/player_walk_1.png").convert_alpha()
@@ -121,8 +148,8 @@ player_logo = pygame.transform.scale(player_logo, (140, 160))
 player_logo_rect = player_logo.get_rect(center=(400, 185))
 
 # Buttons Game Over
-playAgain_button = test_font.render("Play Again", False, ("#FFFFFF"))
-exit_button = test_font.render("Exit", False, ("#FFFFFF"))
+playAgain_button = test_font.render("Play Again", False, ("#000000"))
+exit_button = test_font.render("Exit", False, ("#000000"))
 
 # Play Again Button
 playAgain_bg_rect = pygame.Rect(0, 0, 200, 70)
@@ -155,7 +182,7 @@ while True:
     if game_active:
         screen.blit(sky_bg, (0, 0))  # x, y positions
         screen.blit(ground_bg, (0, 300))
-        display_score()
+        score = display_score()
 
         # Player
         player.draw(screen)
@@ -169,27 +196,14 @@ while True:
         game_active = collision_sprite()
 
     else:
-        screen.fill((94, 129, 162))
-
-        # Draw Logo
-        screen.blit(player_logo, player_logo_rect)
-
-        # Draw Play Again Button
-        pygame.draw.rect(screen, "#A9A9A9", playAgain_bg_rect)
-        screen.blit(playAgain_button, playAgain_text_rect)
-
-        # Draw Exit Button
-        pygame.draw.rect(screen, "#A9A9A9", exit_bg_rect)
-        screen.blit(exit_button, exit_text_rect)
-
-        # Game Over Title
-        screen.blit(gameOver_surface, gameOver_rect)
-
+        draw_menu(score)
+        
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if playAgain_bg_rect.collidepoint(pos):
                 game_active = True
                 start_time = int(pygame.time.get_ticks() / 1000)
+                score = 0
             if exit_bg_rect.collidepoint(pos):
                 pygame.quit()
                 exit()
