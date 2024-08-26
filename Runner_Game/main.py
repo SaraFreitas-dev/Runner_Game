@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
         self.player_walk = [player_walk1 , player_walk2]
         self.player_jump = pygame.image.load("Runner_Game/graphics/Player/jump.png").convert_alpha()
         self.image = self.player_walk[self.player_index]
-        self.rect = self.image.get_rect(midbottom = (200, 300))
+        self.rect = self.image.get_rect(midbottom = (80, 300))
 
 
     def player_input(self):
@@ -104,6 +104,17 @@ def obstacle_movement(obstacle_list):
     else:
         return []
 
+def collisions(player, obstacles):
+    if obstacles:
+        for obstacle_rect in obstacles:
+            if player.colliderect(obstacle_rect): return False
+        return True    
+
+def collision_sprite():
+    if pygame.sprite.spritecollide(player.sprite, obstacle_group, False): # if true the obstacle would be killed if collision occured    
+        obstacle_group.empty()
+        return False
+    else: return True
 
 def player_animation():
     #Play walk animation when the player is on the floor
@@ -214,11 +225,6 @@ while True:
         if game_active:
             if event.type == obstacle_timer:
                 obstacle_group.add(Obstacle(choice(["fly", "snail","snail","snail"])))
-                # if randint(0,2):
-                #     obstacles_rect_list.append(snail_surface.get_rect(bottomright = (randint(900,1100), 300)))
-                # else:
-                #     obstacles_rect_list.append(fly_surface.get_rect(bottomright = (randint(900,1100), 210)))
-    
 
             if event.type == snail_animation_timer:
                 if snail_index == 0: snail_index = 1
@@ -237,9 +243,9 @@ while True:
         display_score()
 
         #Player 
-        player_gravity += 1
-        player_rect.y += player_gravity
-        if player_rect.bottom >= 300: player_rect.bottom = 300
+        # player_gravity += 1
+        # player_rect.y += player_gravity
+        # if player_rect.bottom >= 300: player_rect.bottom = 300
         player_animation()   
         player.draw(screen)
         player.update()
@@ -247,6 +253,7 @@ while True:
         obstacle_group.draw(screen)
         obstacle_group.update()
         
+        game_active = collision_sprite()
 
         # Draw player
         screen.blit(player_surface, player_rect)
