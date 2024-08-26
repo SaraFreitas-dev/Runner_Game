@@ -50,12 +50,14 @@ class Player(pygame.sprite.Sprite):
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(midbottom = (80, 300))
 
+        self.jump_sound = pygame.mixer.Sound("Runner_Game/audio/jump.mp3")
+        self.jump_sound.set_volume(0.5)
 
     def player_input(self):
         keys = pygame.key.get_pressed()    
-        if player_rect.bottom == 300:
-            if keys[pygame.K_SPACE]:
-                self.gravity = -23
+        if keys[pygame.K_SPACE] and self.rect.bottom >= 300:
+            self.gravity = -23
+            self.jump_sound.play()
                     
     def apply_gravity(self):
         self.gravity += 1
@@ -146,6 +148,10 @@ obstacle_group = pygame.sprite.Group()
 
 clock = pygame.time.Clock()  # Control frame rate
 test_font = pygame.font.Font("Runner_Game/font/Pixeltype.ttf", 50)
+
+bg_music = pygame.mixer.Sound("Runner_Game/audio/music.wav")
+bg_music.set_volume(0.7)
+bg_music.play(loops = -1)
 
 # Graphics BG
 sky_bg = pygame.image.load("Runner_Game/graphics/Sky.png")
